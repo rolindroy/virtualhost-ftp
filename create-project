@@ -15,15 +15,15 @@ cat <<"USAGE"
     Usage: sudo bash create-project [OPTIONS] [HOSTNAME]   
 
     [OPTIONS]                                          
-        -c,  -create    Create a new Web Application.            
+        -c,  -create    Create a new Web Application. 
+        -s,  -sslhost   Create vhost with https.
+        -f,  -cftp      Create FTP Account.  
+        -e,  -enable    Enable disabled Web Application.
+        -d,  -disable   Disable existing Web Application.
         -u,  -uhost     Update Existing Applications.
+        -us, -usslhost  Update Existing SSL Application.
         -p,  -upass     Update Existing FTP account Password.
         -r,  -remove    Delele existing Web Application.         
-        -d,  -disable   Disable existing Web Application.        
-        -e,  -enable    Enable disabled Web Application.         
-        -f,  -cftp      Create FTP Account.                      
-        -s,  -sslhost   Create vhost with https.     
-        -us, -usslhost  Update Existing SSL Application.
         -h,  -help      Help, Usage                              
     [HOSTNAME]                                          
         Eg:                                            
