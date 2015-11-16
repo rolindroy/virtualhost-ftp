@@ -157,8 +157,11 @@ remove_all()
     sudo rm $vhost_name
     sudo rm -r $docroot
     user=`cat $conf_file | grep "FTPAccount" | awk -F ": " '{print $2}'` 
-    echo -e "\nRemoving FTPAccount $user!"
-    sudo deluser $uers
+    if [ ! -z $uers];
+    then
+        echo -e "\nRemoving FTPAccount $user!"
+        sudo deluser $uers
+    fi
     echo -e "\nRemoving config files $conf_file!"
     rm $conf_file
 }
