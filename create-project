@@ -15,22 +15,23 @@ cat <<"USAGE"
     Usage: sudo bash create-project [OPTIONS] [HOSTNAME]   
 
     [OPTIONS]                                          
-        -new    Create a new Web Application.            
-        -uhost  Update Existing Applications.
-        -upass  Update Existing FTP account Password.
-        -rem    Delele existing Web Application.         
-        -dis    Disable existing Web Application.        
-        -en     Enable disabled Web Application.         
-        -cftp   Create FTP Account.                      
-        -ssl    Create vhost with https.                 
-        -h      Help, Usage                              
+        -c,  -create    Create a new Web Application.            
+        -u,  -uhost     Update Existing Applications.
+        -p,  -upass     Update Existing FTP account Password.
+        -r,  -remove    Delele existing Web Application.         
+        -d,  -disable   Disable existing Web Application.        
+        -e,  -enable    Enable disabled Web Application.         
+        -f,  -cftp      Create FTP Account.                      
+        -s,  -sslhost   Create vhost with https.     
+        -us, -usslhost  Update Existing SSL Application.
+        -h,  -help      Help, Usage                              
     [HOSTNAME]                                          
         Eg:                                            
             example.com                               
             www.example.com                           
     Examples:                                          
-        sudo bash create-project -new www.example.com 
-        sudo bash create-project -rem www.example.com 
+        sudo bash create-project -c www.example.com 
+        sudo bash create-project -remove www.example.com 
         
     For SSL Key Chain :                                
         Create directory under the 'cert' directory with the name of host,
@@ -243,9 +244,33 @@ restart_apache()
 
 update_vhost()
 {
-    echo 'test'
+    vhost_name=$site_available$host".conf"
+    if [ ! -f $vhost_name ]
+    then
+        echo -e "\nHost name $host.conf does not exist!"
+    else
+        echo -e "\nDefault ServerAlias : " $host
+        printf "Would you like to change ServerAlias $host to www.$host? (y/n) : "
+        read -r alise
+        if [ $alise == "y" ]; then
+            alise_name="www."$host;
+        else
+            alise_name=$host;
+        fi
+        sudo rm $vhost_name
+        echo -e "\nCreating the new $host.conf Virtual Host with DocumentRoot: $docroot"
+        sudo cp $template $vhost_name
+        sudo sed -i 's/{SERVERNAME}/'$host'/g' $vhost_name
+        sudo sed -i 's/{SERVERALIAS}/'$alise_name'/g' $vhost_name
+        sudo sed -i 's|{DOCUMENTROOT}|'$docroot'|g' $vhost_name
+        enable_host
+    fi  
 }
 
+update_svhost()
+{
+    echo 'test';
+}
 update_ftp()
 {
     value=false
@@ -289,29 +314,32 @@ else
         mkdir conf
     fi
     
-    if [ $1 == "-new" ]; then
+    if [ $1 == "-create" ] || [ $1 == "-c" ]; then
         create_vhost
         create_dir
         copy_files
         create_ftp
         restart_apache
-    elif [ $1 == "-ssl" ]; then
+    elif [ $1 == "-sslhost" ] || [ $1 == "-s" ]; then
         create_svhost
         restart_apache
-    elif [ $1 == "-uhost" ]; then
+    elif [ $1 == "-uhost" ] || [ $1 == "-u" ]; then
         update_vhost
         restart_apache
-    elif [ $1 == "-upass" ]; then
+    elif [ $1 == "-usslhost" ] || [ $1 == "-us" ]; then
+        update_svhost
+        restart_apache
+    elif [ $1 == "-upass" ] || [ $1 == "-p" ]; then
         update_ftp
-	elif [ $1 == "-rem" ]; then
+	elif [ $1 == "-remove" ] || [ $1 == "-r" ]; then
         remove_all
         restart_apache
-    elif [ $1 == "-dis" ]; then
+    elif [ $1 == "-disable" ] || [ $1 == "-d" ]; then
         disable_host
         restart_apache
-    elif [ $1 == "-cftp" ]; then
+    elif [ $1 == "-cftp" ] || [ $1 == "-f" ]; then
         create_ftp
-    elif [ $1 == "-en" ]; then
+    elif [ $1 == "-enable" ] || [ $1 == "-e" ]; then
         enable_host
         restart_apache
     else
