@@ -258,7 +258,7 @@ update_vhost()
             alise_name=$host;
         fi
         sudo rm $vhost_name
-        echo -e "\nCreating the new $host.conf Virtual Host with DocumentRoot: $docroot"
+        echo -e "\nUpdating $host.conf Virtual Host with DocumentRoot: $docroot"
         sudo cp $template $vhost_name
         sudo sed -i 's/{SERVERNAME}/'$host'/g' $vhost_name
         sudo sed -i 's/{SERVERALIAS}/'$alise_name'/g' $vhost_name
@@ -269,8 +269,47 @@ update_vhost()
 
 update_svhost()
 {
-    echo 'test';
+    vhost_name_ssl=$site_available$host"-ssl.conf"
+    if [ ! -f $vhost_name_ssl ]
+    then
+        echo -e "\nHost name $host-ssl.conf does not exist!"
+    else
+        echo -e "\nDefault ServerAlias : " $host
+        printf "Would you like to change ServerAlias $host to www.$host? (y/n) : "
+        read -r alise_ssl
+        if [ $alise_ssl == "y" ]; then
+            alise_ssl_name="www."$host;
+        else
+            alise_ssl_name=$host;
+        fi
+        sudo rm $vhost_name
+        
+        echo -e "\nUpdating $host-ssl.conf Virtual Host with DocumentRoot: $docroot"
+        sudo cp $vhost_ssl $vhost_name_ssl
+            
+        sudo sed -i 's/{SERVERNAME}/'$host'/g' $vhost_name_ssl
+        sudo sed -i 's/{SERVERALIAS}/'$alise_ssl_name'/g' $vhost_name_ssl
+        sudo sed -i 's|{DOCUMENTROOT}|'$docroot'|g' $vhost_name_ssl
+            
+        printf "SSLCertificateFile    (Eg example-ssl.crt): "
+        read -r crtFile
+        printf "SSLCertificateKeyFile (Eg example-ssl.pem): "
+        read -r pemFile
+        printf "SSLCACertificateFile    (Eg ca-bundle.crl): "
+        read -r caFile
+            
+        if [[ -f $certfilepath/$crtFile && -f $certfilepath/$pemFile && -f $certfilepath/$caFile ]]; then
+            sudo sed -i 's|{CRT_FILE}|'$certfilepath$crtFile'|g' $vhost_name_ssl
+            sudo sed -i 's|{PEM_FILE}|'$certfilepath$pemFile'|g' $vhost_name_ssl
+            sudo sed -i 's|{CHAIN_CA_FILE}|'$certfilepath$caFile'|g' $vhost_name_ssl
+                enable_host
+        else
+            sudo rm $vhost_name_ssl
+                usage
+        fi
+    fi  
 }
+
 update_ftp()
 {
     value=false
