@@ -5,8 +5,9 @@ template=`pwd`/vhost-template
 index=`pwd`/index
 home_dir=/home/webadmin/WebContent/
 conf_path=`pwd`/conf/
-certpath=`pwd`/cert/
+certpath=`pwd`/cert
 vhost_ssl=`pwd`/vhost-ssl
+certificate_path=/etc/apache2/certs
 
 usage()
 {
@@ -180,7 +181,14 @@ create_dir()
 }
 
 create_svhost()
-{
+{   
+    if [ ! -d $certificate_path]
+    then
+        mkdir $certificate_path
+    fi
+    $siteCertPath=$certificate_path/$host
+    mkdir $siteCertPath
+    
     if [ ! -d $certpath ]
     then
         mkdir $certpath
@@ -206,6 +214,7 @@ create_svhost()
             fi
             echo -e "\nCreating the new $host-ssl.conf Virtual Host with DocumentRoot: $docroot"
             sudo cp $vhost_ssl $vhost_name_ssl
+            sudo cp $certfilepath/* $siteCertPath/
             
             sudo sed -i 's/{SERVERNAME}/'$host'/g' $vhost_name_ssl
             sudo sed -i 's/{SERVERALIAS}/'$alise_ssl_name'/g' $vhost_name_ssl
@@ -222,13 +231,13 @@ create_svhost()
             
             if [[ -f $certfilepath/$crtFile && -f $certfilepath/$pemFile && -f $certfilepath/$caFile ]]; then
             
-                sudo sed -i 's|{CRT_FILE}|'$certfilepath$crtFile'|g' $vhost_name_ssl
-                sudo sed -i 's|{PEM_FILE}|'$certfilepath$pemFile'|g' $vhost_name_ssl
-                sudo sed -i 's|{CHAIN_CA_FILE}|'$certfilepath$caFile'|g' $vhost_name_ssl
+                sudo sed -i 's|{CRT_FILE}|'$siteCertPath/$crtFile'|g' $vhost_name_ssl
+                sudo sed -i 's|{PEM_FILE}|'$siteCertPath/$pemFile'|g' $vhost_name_ssl
+                sudo sed -i 's|{CHAIN_CA_FILE}|'$siteCertPath/$caFile'|g' $vhost_name_ssl
                 
-                echo "SSLCertificateFile     : "$certfilepath$crtFile >>$conf_file
-                echo "SSLCertificateKeyFile  : "$certfilepath$pemFile >>$conf_file
-                echo "SSLCACertificateFile   : "$certfilepath$caFile >>$conf_file
+                echo "SSLCertificateFile     : "$siteCertPath/$crtFile >>$conf_file
+                echo "SSLCertificateKeyFile  : "$siteCertPath/$pemFile >>$conf_file
+                echo "SSLCACertificateFile   : "$siteCertPath/$caFile >>$conf_file
                 enable_host
             else
                 sudo rm $vhost_name_ssl
@@ -272,6 +281,16 @@ update_vhost()
 
 update_svhost()
 {
+    if [ ! -d $certificate_path]
+    then
+        mkdir $certificate_path
+    fi
+    $siteCertPath=$certificate_path/$host
+    if [ ! -d $siteCertPath]
+    then
+        mkdir $siteCertPath
+    fi
+    
     vhost_name_ssl=$site_available$host"-ssl.conf"
     if [ ! -f $vhost_name_ssl ]
     then
@@ -302,9 +321,9 @@ update_svhost()
         read -r caFile
             
         if [[ -f $certfilepath/$crtFile && -f $certfilepath/$pemFile && -f $certfilepath/$caFile ]]; then
-            sudo sed -i 's|{CRT_FILE}|'$certfilepath$crtFile'|g' $vhost_name_ssl
-            sudo sed -i 's|{PEM_FILE}|'$certfilepath$pemFile'|g' $vhost_name_ssl
-            sudo sed -i 's|{CHAIN_CA_FILE}|'$certfilepath$caFile'|g' $vhost_name_ssl
+            sudo sed -i 's|{CRT_FILE}|'$siteCertPath/$crtFile'|g' $vhost_name_ssl
+            sudo sed -i 's|{PEM_FILE}|'$siteCertPath/$pemFile'|g' $vhost_name_ssl
+            sudo sed -i 's|{CHAIN_CA_FILE}|'$siteCertPath/$caFile'|g' $vhost_name_ssl
                 enable_host
         else
             sudo rm $vhost_name_ssl
