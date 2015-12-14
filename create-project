@@ -16,21 +16,25 @@ cat <<"USAGE"
     Usage: sudo bash create-project [OPTIONS] [HOSTNAME]   
 
     [OPTIONS]                                          
-        -c,  -create    Create a new Web Application. 
-        -s,  -sslhost   Create vhost with https.
-        -f,  -cftp      Create FTP Account.  
-        -e,  -enable    Enable disabled Web Application.
-        -d,  -disable   Disable existing Web Application.
-        -u,  -uhost     Update Existing Applications.
-        -us, -usslhost  Update Existing SSL Application.
-        -p,  -upass     Update Existing FTP account Password.
-        -r,  -remove    Delele existing Web Application.         
-        -h,  -help      Help, Usage                              
+        -c,  -create      Create a new Web Application. 
+        -s,  -sslhost     Create vhost with https.
+        -f,  -cftp        Create FTP Account.  
+        -e,  -enable      Enable disabled Web Application.
+        -d,  -disable     Disable existing Web Application.
+        -u,  -uhost       Update Existing Applications.
+        -us, -usslhost    Update Existing SSL Application.
+        -p,  -upass       Update Existing FTP account Password.
+        -r,  -remove      Delele existing Web Application.
+        -cl, -clone       Clone gitRepo to Application.
+        -ur, -updateRepo  Update Existing Repo
+        -h,  -help        Help, Usage                              
     [HOSTNAME]                                          
         Eg:                                            
             example.com                               
             www.example.com                           
-    Examples:                                          
+    Examples:
+        sudo bash create-project -cl www.example.com http://gitRepoUrl/
+        sudo bash create-project -ur www.example.com 
         sudo bash create-project -c www.example.com 
         sudo bash create-project -remove www.example.com 
         
@@ -359,6 +363,17 @@ update_ftp()
     fi
 }
 
+clone()
+{
+    if [ -d $docroot ]
+    then
+        git clone $3  $docroot/
+    else
+        usage
+    fi
+}
+
+
 echo -e " "
        
 if [ $# -lt 1 ]
@@ -403,6 +418,15 @@ else
     elif [ $1 == "-enable" ] || [ $1 == "-e" ]; then
         enable_host
         restart_apache
+    elif [ $1 == "-clone" ] || [ $1 == "-cl" ]; then
+        if [ $3 -lt 1 ]
+        then
+            usage
+        else
+            clone
+        fi
+    elif [ $1 == "-updateRepo" ] || [ $1 == "-ur" ]; then
+        git pull $docroot
     else
         usage
 	fi
