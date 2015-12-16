@@ -386,6 +386,22 @@ clone()
     fi
 }
 
+update_repo()
+{
+    if [ -d $docroot ]
+    then
+        if [ -d $docroot/.svn ]
+        then
+            svn cleanup $docroot/
+            svn up $docroot/
+        else
+            git pull $docroot/
+        fi
+    else
+        usage
+    fi
+}
+
 
 echo -e " "
        
@@ -432,9 +448,9 @@ else
         enable_host
         restart_apache
     elif [ $1 == "-clone" ] || [ $1 == "-cl" ]; then
-            clone
+        clone
     elif [ $1 == "-repoUpdate" ] || [ $1 == "-up" ]; then
-        git pull $docroot
+        update_repo
     else
         usage
 	fi
