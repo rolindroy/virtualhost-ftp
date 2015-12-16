@@ -3,7 +3,7 @@
 site_available=/etc/apache2/sites-available/
 template=`pwd`/vhost-template
 index=`pwd`/index
-home_dir=/home/webadmin/WebContent/
+home_dir=/webadmin/
 conf_path=`pwd`/conf/
 certpath=`pwd`/cert
 vhost_ssl=`pwd`/vhost-ssl
@@ -428,6 +428,11 @@ else
         copy_files
         create_ftp
         restart_apache
+        printf "Would you like to clone files from repo ? (y/n) : " 
+        read -r isrepo 
+        if [ $isrepo == "y" ]; then
+            clone
+        fi
     elif [ $1 == "-sslhost" ] || [ $1 == "-s" ]; then
         create_svhost
         restart_apache
