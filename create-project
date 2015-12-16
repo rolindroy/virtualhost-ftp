@@ -395,7 +395,9 @@ update_repo()
             svn cleanup $docroot/
             svn up $docroot/
         else
-            git pull $docroot/
+            cd $docroot/
+            git fetch;
+            git checkout HEAD;
         fi
     else
         usage
