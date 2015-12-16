@@ -367,6 +367,7 @@ clone()
 {
     if [ -d $docroot ]
     then
+        rm -r $docroot/*
         printf "Repository  system ? (git/svn)  : " 
         read -r repo
         
