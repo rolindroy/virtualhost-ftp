@@ -25,15 +25,15 @@ cat <<"USAGE"
         -us, -usslhost    Update Existing SSL Application.
         -p,  -upass       Update Existing FTP account Password.
         -r,  -remove      Delele existing Web Application.
-        -cl, -clone       Clone gitRepo to Application.
-        -ur, -updateRepo  Update Existing Repo
+        -cl, -clone       Clone git/svn Repo to Application.
+        -up, -repoUpdate  Update Existing Repo
         -h,  -help        Help, Usage                              
     [HOSTNAME]                                          
         Eg:                                            
             example.com                               
             www.example.com                           
     Examples:
-        sudo bash create-project -cl www.example.com http://gitRepoUrl/
+        sudo bash create-project -cl www.example.com 
         sudo bash create-project -ur www.example.com 
         sudo bash create-project -c www.example.com 
         sudo bash create-project -remove www.example.com 
@@ -367,7 +367,20 @@ clone()
 {
     if [ -d $docroot ]
     then
-        git clone $3  $docroot/
+        printf "Respiratory system ? (git/svn)  : " 
+        read -r repo
+        
+        printf "Respiratory Url ? [http://test/]  : " 
+        read -r repoUrl
+        
+        if [ $repo == "git" ]
+            git clone $repoUrl  $docroot/
+        elif [ $repo == "svn" ]
+            svn co $repoUrl  $docroot/
+        else
+            usage
+        fi
+        
     else
         usage
     fi
@@ -419,13 +432,8 @@ else
         enable_host
         restart_apache
     elif [ $1 == "-clone" ] || [ $1 == "-cl" ]; then
-        if [ $3 -lt 1 ]
-        then
-            usage
-        else
             clone
-        fi
-    elif [ $1 == "-updateRepo" ] || [ $1 == "-ur" ]; then
+    elif [ $1 == "-repoUpdate" ] || [ $1 == "-up" ]; then
         git pull $docroot
     else
         usage
