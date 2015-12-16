@@ -367,15 +367,15 @@ clone()
 {
     if [ -d $docroot ]
     then
-        printf "Respiratory system ? (git/svn)  : " 
+        printf "Repository  system ? (git/svn)  : " 
         read -r repo
         
-        printf "Respiratory Url ? [http://test/]  : " 
+        printf "Repository  Url ? [http://test/]  : " 
         read -r repoUrl
         
-        if [ $repo == "git" ]
+        if [ $repo == "git" ]; then
             git clone $repoUrl  $docroot/
-        elif [ $repo == "svn" ]
+        elif [ $repo == "svn" ]; then
             svn co $repoUrl  $docroot/
         else
             usage
