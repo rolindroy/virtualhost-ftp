@@ -415,6 +415,12 @@ else
     host=$2
     conf_file=$conf_path$host
     docroot=$home_dir$host
+    
+    if [ ! -d $home_dir ]
+    then
+        mkdir $home_dir
+    fi
+    
     if [ -d $conf_path ]
     then
         touch $conf_file
