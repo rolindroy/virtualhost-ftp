@@ -2,6 +2,7 @@
 
 site_available=/etc/apache2/sites-available/
 template=`pwd`/vhost-template
+htaccess=`pwd`/.htaccess
 index=`pwd`/index
 home_dir=/webadmin/
 conf_path=`pwd`/conf/
@@ -27,6 +28,7 @@ cat <<"USAGE"
         -r,  -remove      Delele existing Web Application.
         -cl, -clone       Clone git/svn Repo to Application.
         -up, -repoUpdate  Update Existing Repo
+        -ht, -htaccess    Create .htaccess file
         -h,  -help        Help, Usage                              
     [HOSTNAME]                                          
         Eg:                                            
@@ -405,6 +407,28 @@ update_repo()
     fi
 }
 
+create_htaccess()
+{
+    if [ -d $docroot ]
+    then
+        if [ -f $docroot/.htaccess ]
+        then
+            cat $docroot/.htaccess
+        else
+	    cat $htaccess > $docroot/.htaccess
+	    sudo sed -i 's/{HOSTNAME}/'$host'/g' $docroot/.htaccess
+	    cat $docroot/.htaccess
+        fi
+        printf "Would you like to modify .htaccess? (y/n) : " 
+        read -r htFlag
+        if [ $htFlag == "y" ]; then
+            sudo vi $docroot/.htaccess < `tty` > `tty`
+        fi
+    else
+        usage
+    fi
+}
+
 
 echo -e " "
        
@@ -465,7 +489,9 @@ else
         clone
     elif [ $1 == "-repoUpdate" ] || [ $1 == "-up" ]; then
         update_repo
+    elif [ $1 == "-htaccess" ] || [ $1 == "-ht" ]; then
+        create_htaccess
     else
         usage
-	fi
+    fi
 fi
