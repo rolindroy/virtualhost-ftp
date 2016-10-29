@@ -456,7 +456,7 @@ else
         create_vhost
         create_dir
         copy_files
-        create_ftp
+       # create_ftp
         restart_apache
         printf "Would you like to clone files from repo ? (y/n) : " 
         read -r isrepo 
