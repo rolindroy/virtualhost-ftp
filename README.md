@@ -2,7 +2,7 @@
 
 Usage:
 
-    sudo bash create-project [OPTIONS] [HOSTNAME]   
+    bash create-project [OPTIONS] [HOSTNAME]   
     [OPTIONS]                                          
         -c,  -create      Create a new Web Application. 
         -s,  -sslhost     Create vhost with https.
