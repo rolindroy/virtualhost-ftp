@@ -14,7 +14,7 @@ usage()
 {
 cat <<"USAGE"
 
-    Usage: sudo bash create-project [OPTIONS] [HOSTNAME]   
+    Usage: bash create-project [OPTIONS] [HOSTNAME]   
 
     [OPTIONS]                                          
         -c,  -create      Create a new Web Application. 
