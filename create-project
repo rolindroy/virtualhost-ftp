@@ -35,10 +35,10 @@ cat <<"USAGE"
             example.com                               
             www.example.com                           
     Examples:
-        sudo bash create-project -cl www.example.com 
-        sudo bash create-project -ur www.example.com 
-        sudo bash create-project -c www.example.com 
-        sudo bash create-project -remove www.example.com 
+        bash create-project -cl www.example.com 
+        bash create-project -ur www.example.com 
+        bash create-project -c www.example.com 
+        bash create-project -remove www.example.com 
         
     For SSL Key Chain :                                
         Create directory under the 'cert' directory with the name of host,
